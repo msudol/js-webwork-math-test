@@ -1,6 +1,6 @@
 // incoming msg
 var msg = {};
-// outgoing msg
+// outgoing msg - not being used right now
 var omsg = {};
 
 onmessage = function(e) {
@@ -14,7 +14,7 @@ onmessage = function(e) {
     }
 };
 
-// take a number ranger to operate on
+// take a number range to operate on
 function IPN(n, mod) {
     for (n; 0 < 1; n = n + mod) {
         var s = n.toString(), x = 0;

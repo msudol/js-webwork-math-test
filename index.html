@@ -1,9 +1,13 @@
-<html><head>
+<html>
+<head>
 <meta http-equiv="Access-Control-Allow-Origin" content="*">
 <title>JS Threaded Math using Webworker</title>
-<script>   
+<script>
+
+    // setup vars we're going to need including the default for threads at 8.
     var p = [], threads = 8, workers = [], msg = [], running = false, start;
     
+    // when a worker has completed it's task, terminate it.
     function killWorkers() {
         for (var i = 0; i < threads; i++) {
             workers[i].terminate();
@@ -13,10 +17,13 @@
         document.getElementById("time").innerHTML = "Execution time: " + time;   
     }
     
+    // basic sorting function to order the results.
     function sortNumber(a,b) {
         return a - b;
     }
 
+    // when a result is calculated, push it to the global array p and then sort.
+    // check to see if we're done and stop the workers.
     function result(num) { 
         p.push(num);
         p.sort(sortNumber);
@@ -24,9 +31,11 @@
         document.getElementById("result").innerHTML = "Calc: " + p.toString();
         if (p.length > 24) {
            killWorkers();
+           reset();
         }
     }
     
+    // reset the workers and clear all the variables to default
     function reset() {
         for (var i = 0; i < threads; i++) {
             if (workers[i] !== undefined) {
@@ -38,15 +47,20 @@
         document.getElementById("result").innerHTML = "Calc: ";
     }
     
+    // trigger by the begin button, initializes the workers and calls the worker.js 
+    // code which does the number calculation.
     function fn() {
         if (running) {
-            alert("Already running, reload page to start over");
+            alert("Already running, reload page or click reset to start over");
         }
         else {
             running = true;
-            document.getElementById("time").innerHTML = "Calculation in progress...";
+            document.getElementById("time").innerHTML = "Calculation in progress..."; 
             threads = parseInt(document.getElementById("threads").value);
+            // for calculating speed of calculation
             start = new Date().getTime();
+            
+            // creating a worker for each 'thread'
             for (var i = 0; i < threads; i++) {
                 workers[i] = new Worker('worker.js');
                 workers[i].onmessage = function(e) {
@@ -59,6 +73,7 @@
                 msg[i].run = true;
                 workers[i].postMessage(JSON.stringify(msg[i])); 
             } 
+            
         }
     }    
 </script>
@@ -104,4 +119,5 @@ Note: Some browsers like Chrome will not allow you to execute this from the file
 web server or launch Chrome with the --allow-file-access-from-files flag.
 </div>
 
-</body></html>
+</body>
+</html>
